@@ -71,7 +71,7 @@ class _Indicator extends StatelessWidget {
         shape: BoxShape.circle,
         color: active
             ? const Color(0xffFBFF01)
-            : const Color(0xffFBFF01).withValues(alpha: 0.2),
+            : const Color(0xffFBFF01).withOpacity(0.2),
       ),
     );
   }

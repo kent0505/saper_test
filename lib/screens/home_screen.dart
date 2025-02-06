@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../bloc/timer/timer_bloc.dart';
+import '../core/utils.dart';
 import '../widgets/diamonds_amount.dart';
 import '../widgets/main_button.dart';
 import '../widgets/svg_button.dart';
@@ -54,20 +57,34 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 18),
-            const Row(
+            Row(
               children: [
-                Text(
-                  'Spin The Wheel Now',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontFamily: 'w800',
-                  ),
+                BlocConsumer<TimerBloc, TimerState>(
+                  listener: (context, state) {},
+                  builder: (context, state) {
+                    return Text(
+                      state is TimerStarted
+                          ? formatTime(state.second)
+                          : 'Spin The Wheel Now',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontFamily: 'w800',
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
             const SizedBox(height: 10),
-            const WheelWidget(active: true),
+            BlocBuilder<TimerBloc, TimerState>(
+              buildWhen: (previous, current) {
+                return previous is TimerStarted && current is TimerStopped;
+              },
+              builder: (context, state) {
+                return WheelWidget(active: state is TimerStopped);
+              },
+            ),
             const Spacer(),
             MainButton(
               title: 'Play Game',

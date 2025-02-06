@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/svg_button.dart';
+import '../widgets/appbar.dart';
 
 class TermsScreen extends StatelessWidget {
   const TermsScreen({super.key});
@@ -10,31 +10,7 @@ class TermsScreen extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          SizedBox(height: 8 + MediaQuery.of(context).viewPadding.top),
-          Row(
-            children: [
-              const SizedBox(width: 16),
-              SvgButton(
-                asset: 'assets/back.svg',
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              const Expanded(
-                child: Center(
-                  child: Text(
-                    'Terms of Use',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontFamily: 'w700',
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16 + 58),
-            ],
-          ),
+          const Appbar(title: 'Terms of Use'),
           const SizedBox(height: 16),
           Expanded(
             child: ListView(

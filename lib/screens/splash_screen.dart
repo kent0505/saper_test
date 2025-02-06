@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/game/game_bloc.dart';
+import '../bloc/timer/timer_bloc.dart';
+import '../core/utils.dart';
 import '../widgets/loading.dart';
 import 'home_screen.dart';
 
@@ -14,6 +16,10 @@ class SplashScreen extends StatelessWidget {
       body: BlocConsumer<GameBloc, GameState>(
         listener: (context, state) {
           if (state is GameLoaded) {
+            context
+                .read<TimerBloc>()
+                .add(StartTimer(seconds: getRemainingTime()));
+
             Future.delayed(
               const Duration(milliseconds: 300),
               () {

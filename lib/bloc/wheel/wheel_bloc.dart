@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:saper_test/core/prefs.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/utils.dart';
 
@@ -36,6 +38,10 @@ class WheelBloc extends Bloc<WheelEvent, WheelState> {
     });
 
     on<StartSpin>((event, emit) async {
+      final prefs = await SharedPreferences.getInstance();
+      lastSpin = getTimestamp();
+      prefs.setInt('lastSpin', lastSpin);
+
       Random random = Random();
       int randomIndex = random.nextInt(angles.length);
       double angle = angles[randomIndex];

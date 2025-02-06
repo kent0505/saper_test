@@ -38,7 +38,7 @@ class ClearDialog extends StatelessWidget {
             const Spacer(),
             Container(
               height: 0.5,
-              color: const Color(0xff545458).withValues(alpha: 0.65),
+              color: const Color(0xff545458).withOpacity(0.65),
             ),
             Row(
               children: [
@@ -54,7 +54,7 @@ class ClearDialog extends StatelessWidget {
                 Container(
                   height: 44,
                   width: 0.5,
-                  color: const Color(0xff545458).withValues(alpha: 0.65),
+                  color: const Color(0xff545458).withOpacity(0.65),
                 ),
                 _Button(
                   title: 'Cancel',

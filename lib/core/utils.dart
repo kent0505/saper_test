@@ -2,6 +2,8 @@ import 'dart:developer' as developer;
 
 import 'package:intl/intl.dart';
 
+import 'prefs.dart';
+
 int getTimestamp() => DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
 String timestampToString(int timestamp) {
@@ -31,3 +33,20 @@ String formatNumber(int number) {
 }
 
 void logger(Object message) => developer.log(message.toString());
+
+int getRemainingTime() {
+  // int cooldown = 24 * 60 * 60;
+  int cooldown = 60;
+  int nextSpinTime = lastSpin + cooldown;
+  int remainingTime = nextSpinTime - getTimestamp();
+  return remainingTime > 0 ? remainingTime : 0;
+}
+
+String formatTime(int seconds) {
+  int hours = seconds ~/ 3600;
+  int minutes = (seconds % 3600) ~/ 60;
+  int secs = seconds % 60;
+  return '${hours.toString().padLeft(2, '0')}:'
+      '${minutes.toString().padLeft(2, '0')}:'
+      '${secs.toString().padLeft(2, '0')}';
+}

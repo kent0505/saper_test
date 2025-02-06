@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../bloc/timer/timer_bloc.dart';
 import '../bloc/wheel/wheel_bloc.dart';
+import '../core/utils.dart';
 import 'button.dart';
 import 'svg_widget.dart';
 
@@ -12,7 +14,9 @@ class WheelWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Opacity(
+    logger('BUILD');
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 300),
       opacity: active ? 1 : 0.2,
       child: SizedBox(
         height: 390,
@@ -57,6 +61,9 @@ class WheelWidget extends StatelessWidget {
                           state is WheelStopped && state.canSpin && active
                       ? () {
                           context.read<WheelBloc>().add(StartSpin());
+                          context
+                              .read<TimerBloc>()
+                              .add(StartTimer(seconds: getRemainingTime()));
                         }
                       : null,
                   child: Container(
