@@ -73,7 +73,7 @@ class WheelWidget extends StatelessWidget {
                         ),
                       ).then((_) async {
                         final prefs = await SharedPreferences.getInstance();
-                        lastSpin = getTimestamp();
+                        lastSpin = timestamp();
                         await prefs.setInt('lastSpin', lastSpin);
                         if (context.mounted) {
                           context

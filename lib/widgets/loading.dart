@@ -42,13 +42,13 @@ class _LoadingState extends State<Loading> with SingleTickerProviderStateMixin {
         builder: (context, child) {
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              3,
-              (index) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: _Circle(index == animation.value),
-              ),
-            ),
+            children: [
+              _Circle(animation.value == 0),
+              const SizedBox(width: 8),
+              _Circle(animation.value == 1),
+              const SizedBox(width: 8),
+              _Circle(animation.value == 2),
+            ],
           );
         },
       ),

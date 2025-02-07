@@ -8,8 +8,7 @@ import '../core/utils.dart';
 import '../widgets/diamonds_amount.dart';
 import '../widgets/field_card.dart';
 import '../widgets/increment_widget.dart';
-import '../widgets/loading.dart';
-import '../widgets/main_button.dart';
+import '../widgets/yellow_button.dart';
 import '../widgets/svg_button.dart';
 import '../widgets/svg_widget.dart';
 import 'win_screen.dart';
@@ -26,7 +25,6 @@ class _GameScreenState extends State<GameScreen> {
   double coefficient = 0.25;
   int amount = 10;
   int bombs = 3;
-  bool loading = true;
   bool started = false;
   bool canTap = true;
   List<Field> fields = [];
@@ -34,17 +32,14 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
-      loading = false;
-      generate();
-    });
+    generate();
   }
 
   void goToWin(bool win) {
     context.read<StatsBloc>().add(
           AddStats(
             model: Stats(
-              id: getTimestamp(),
+              id: timestamp(),
               amount: win ? diamondsWon : -diamondsWon,
               predicted: amount.toDouble(),
               coefficient: coefficient,
@@ -120,86 +115,78 @@ class _GameScreenState extends State<GameScreen> {
                 const DiamondsAmount(),
               ],
             ),
-            if (loading)
-              const Expanded(child: Loading())
-            else ...[
-              const SizedBox(height: 18),
-              started
-                  ? Container(
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: const Color(0xff390639),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SvgWidget('assets/diamond.svg', height: 32),
-                          const SizedBox(width: 8),
-                          Text(
-                            diamondsWon.toStringAsFixed(2),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 40,
-                              fontFamily: 'w800',
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : const Text(
-                      'Let’s Play Game!',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 40,
-                        fontFamily: 'w800',
-                      ),
+            const Spacer(),
+            started
+                ? Container(
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: const Color(0xff390639),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-              const SizedBox(height: 26),
-              Expanded(
-                child: Center(
-                  child: SizedBox(
-                    width: 60 * 6,
-                    child: Wrap(
-                      children: fields.map((field) {
-                        return FieldCard(
-                          field: field,
-                          onPressed: canTap && started && !field.active
-                              ? onField
-                              : null,
-                        );
-                      }).toList(),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SvgWidget('assets/diamond.svg', height: 32),
+                        const SizedBox(width: 8),
+                        Text(
+                          diamondsWon.toStringAsFixed(2),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 40,
+                            fontFamily: 'w800',
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : const Text(
+                    'Let’s Play Game!',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 40,
+                      fontFamily: 'w800',
                     ),
                   ),
-                ),
+            const Spacer(),
+            SizedBox(
+              width: 60 * 6,
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                children: fields.map((field) {
+                  return FieldCard(
+                    field: field,
+                    onPressed:
+                        canTap && started && !field.active ? onField : null,
+                  );
+                }).toList(),
               ),
-              const SizedBox(height: 16),
-              Text(
-                'Avoid mines while opening all objectives to multiply your winnings by $amount!',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontFamily: 'w600',
-                ),
+            ),
+            const Spacer(),
+            Text(
+              'Avoid mines while opening all objectives to multiply your winnings by $amount!',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontFamily: 'w600',
               ),
-              const SizedBox(height: 16),
-              if (!started)
-                IncrementWidget(
-                  amount: amount,
-                  bombs: bombs,
-                  onIncrement1: () => updateAmount(true),
-                  onDecrement1: () => updateAmount(false),
-                  onIncrement2: () => updateBombs(true),
-                  onDecrement2: () => updateBombs(false),
-                ),
-              const SizedBox(height: 46),
-              MainButton(
-                title: started ? 'Finish Game' : 'Play Game',
-                active: started ? fields.any((field) => field.active) : true,
-                onPressed: onStart,
+            ),
+            const Spacer(),
+            if (!started)
+              IncrementWidget(
+                amount: amount,
+                bombs: bombs,
+                onIncrement1: () => updateAmount(true),
+                onDecrement1: () => updateAmount(false),
+                onIncrement2: () => updateBombs(true),
+                onDecrement2: () => updateBombs(false),
               ),
-              const SizedBox(height: 44),
-            ],
+            const Spacer(),
+            YellowButton(
+              title: started ? 'Finish Game' : 'Play Game',
+              active: started ? fields.any((field) => field.active) : true,
+              onPressed: onStart,
+            ),
+            const Spacer(),
           ],
         ),
       ),

@@ -9,27 +9,27 @@ int lastSpin = 0;
 
 Future<void> getData() async {
   final prefs = await SharedPreferences.getInstance();
-  // await prefs.clear();
   diamonds = prefs.getDouble('diamonds') ?? 0;
   lastSpin = prefs.getInt('lastSpin') ?? 0;
   await Hive.initFlutter();
-  // await Hive.deleteBoxFromDisk('saper_test_box');
   Hive.registerAdapter(StatsAdapter());
 }
 
 Future<List<Stats>> getStats() async {
   final box = await Hive.openBox('saper_test_box');
-  List data = box.get('stats') ?? [];
+  List data = await box.get('stats') ?? [];
   return data.cast<Stats>();
 }
 
 Future<List<Stats>> updateStats(List<Stats> stats) async {
   final box = await Hive.openBox('saper_test_box');
-  box.put('stats', stats);
+  await box.put('stats', stats);
   return await box.get('stats');
 }
 
-int getTimestamp() => DateTime.now().millisecondsSinceEpoch ~/ 1000;
+int timestamp() {
+  return DateTime.now().millisecondsSinceEpoch ~/ 1000;
+}
 
 String timestampToString(int timestamp) {
   DateTime date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
@@ -38,9 +38,8 @@ String timestampToString(int timestamp) {
 
 int getTime() {
   int cooldown = 24 * 60 * 60; // 24 hours
-  // int cooldown = 30; // 30 seconds for test
   int nextSpinTime = lastSpin + cooldown;
-  int remainingTime = nextSpinTime - getTimestamp();
+  int remainingTime = nextSpinTime - timestamp();
   return remainingTime > 0 ? remainingTime : 0;
 }
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../screens/game_screen.dart';
-import 'main_button.dart';
+import 'yellow_button.dart';
 
 class NoData extends StatelessWidget {
   const NoData({super.key});
@@ -32,7 +32,7 @@ class NoData extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          MainButton(
+          YellowButton(
             title: 'Play Game',
             width: 180,
             onPressed: () {

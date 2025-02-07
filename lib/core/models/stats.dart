@@ -2,21 +2,24 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 @HiveType(typeId: 0)
 class Stats {
-  @HiveField(0)
-  final int id;
-  @HiveField(1)
-  double amount;
-  @HiveField(2)
-  double predicted;
-  @HiveField(3)
-  double coefficient;
-
   Stats({
     required this.id,
     required this.amount,
     required this.predicted,
     required this.coefficient,
   });
+
+  @HiveField(0)
+  final int id;
+
+  @HiveField(1)
+  double amount;
+
+  @HiveField(2)
+  double predicted;
+
+  @HiveField(3)
+  double coefficient;
 }
 
 class StatsAdapter extends TypeAdapter<Stats> {

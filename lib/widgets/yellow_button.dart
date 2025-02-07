@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'button.dart';
 
-class MainButton extends StatelessWidget {
-  const MainButton({
+class YellowButton extends StatelessWidget {
+  const YellowButton({
     super.key,
     required this.title,
     this.width,

@@ -9,6 +9,7 @@ part 'wheel_state.dart';
 class WheelBloc extends Bloc<WheelEvent, WheelState> {
   WheelBloc() : super(WheelInitial()) {
     double turns = 0;
+
     List<double> angles = [
       1.1, // 150
       1.14, // 180
@@ -37,14 +38,21 @@ class WheelBloc extends Bloc<WheelEvent, WheelState> {
       int randomIndex = random.nextInt(angles.length);
       double angle = angles[randomIndex];
       turns += 6;
-      emit(WheelStopped(turns: turns + angle));
-      await Future.delayed(const Duration(seconds: 10), () {
-        emit(WheelStopped(
-          prize: getPrize(angle),
-          turns: turns + angles[randomIndex],
-          canSpin: true,
-        ));
-      });
+      emit(
+        WheelStopped(turns: turns + angle),
+      );
+      await Future.delayed(
+        const Duration(seconds: 10),
+        () {
+          emit(
+            WheelStopped(
+              prize: getPrize(angle),
+              turns: turns + angles[randomIndex],
+              canSpin: true,
+            ),
+          );
+        },
+      );
     });
   }
 }

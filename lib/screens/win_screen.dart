@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/stats/stats_bloc.dart';
 import '../widgets/button.dart';
-import '../widgets/main_button.dart';
+import '../widgets/yellow_button.dart';
 import '../widgets/svg_widget.dart';
 
 class WinScreen extends StatelessWidget {
@@ -69,7 +69,7 @@ class WinScreen extends StatelessWidget {
                         ),
                       ),
                 const SizedBox(height: 26),
-                MainButton(
+                YellowButton(
                   title: wheel ? 'Collect' : 'Repeat Game',
                   onPressed: () {
                     context

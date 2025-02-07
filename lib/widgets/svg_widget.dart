@@ -7,14 +7,12 @@ class SvgWidget extends StatelessWidget {
     super.key,
     this.height,
     this.width,
-    this.color,
     this.fit = BoxFit.contain,
   });
 
   final String assetName;
   final double? height;
   final double? width;
-  final Color? color;
   final BoxFit fit;
 
   @override
@@ -24,12 +22,6 @@ class SvgWidget extends StatelessWidget {
       height: height,
       width: width,
       fit: fit,
-      colorFilter: color != null
-          ? ColorFilter.mode(
-              color!,
-              BlendMode.srcIn,
-            )
-          : null,
     );
   }
 }

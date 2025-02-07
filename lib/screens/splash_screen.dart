@@ -17,18 +17,13 @@ class SplashScreen extends StatelessWidget {
         listener: (context, state) {
           if (state is StatsLoaded) {
             context.read<TimerBloc>().add(StartTimer(seconds: getTime()));
-
             Future.delayed(
               const Duration(milliseconds: 300),
               () {
                 if (context.mounted) {
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return const HomeScreen();
-                      },
-                    ),
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
                     (route) => false,
                   );
                 }

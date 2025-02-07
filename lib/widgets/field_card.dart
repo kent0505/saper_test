@@ -23,8 +23,8 @@ class FieldCard extends StatelessWidget {
               onPressed!(field);
             },
       child: Container(
-        height: 58,
-        width: 58,
+        height: MediaQuery.of(context).size.width < 390 ? 50 : 58,
+        width: MediaQuery.of(context).size.width < 390 ? 50 : 58,
         margin: const EdgeInsets.all(1),
         decoration: BoxDecoration(
           color:

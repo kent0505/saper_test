@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/timer/timer_bloc.dart';
 import '../core/utils.dart';
 import '../widgets/home_appbar.dart';
-import '../widgets/main_button.dart';
+import '../widgets/yellow_button.dart';
 import '../widgets/wheel_widget.dart';
 import 'game_screen.dart';
 
@@ -50,7 +50,7 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             const Spacer(),
-            MainButton(
+            YellowButton(
               title: 'Play Game',
               onPressed: () {
                 Navigator.push(
