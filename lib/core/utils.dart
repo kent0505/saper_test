@@ -1,8 +1,17 @@
 import 'dart:developer' as developer;
 
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'prefs.dart';
+double diamonds = 0;
+int lastSpin = 0;
+
+Future<void> getPrefs() async {
+  final prefs = await SharedPreferences.getInstance();
+  // await prefs.clear();
+  diamonds = prefs.getDouble('diamonds') ?? 0;
+  lastSpin = prefs.getInt('lastSpin') ?? 0;
+}
 
 int getTimestamp() => DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
@@ -34,9 +43,9 @@ String formatNumber(int number) {
 
 void logger(Object message) => developer.log(message.toString());
 
-int getRemainingTime() {
-  // int cooldown = 24 * 60 * 60;
-  int cooldown = 60;
+int getTime() {
+  int cooldown = 24 * 60 * 60;
+  // int cooldown = 30;
   int nextSpinTime = lastSpin + cooldown;
   int remainingTime = nextSpinTime - getTimestamp();
   return remainingTime > 0 ? remainingTime : 0;

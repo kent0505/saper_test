@@ -7,12 +7,12 @@ final class WheelInitial extends WheelState {}
 
 final class WheelStopped extends WheelState {
   WheelStopped({
-    this.color = Colors.transparent,
+    this.prize = 0,
     required this.turns,
     this.canSpin = false,
   });
 
-  final Color color;
+  final double prize;
   final double turns;
   final bool canSpin;
 }

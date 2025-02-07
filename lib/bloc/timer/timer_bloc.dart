@@ -9,19 +9,20 @@ part 'timer_event.dart';
 part 'timer_state.dart';
 
 class TimerBloc extends Bloc<TimerEvent, TimerState> {
-  Timer? _timer;
-  int _second = 0;
+  Timer? timer;
+  int second = 0;
 
   TimerBloc() : super(TimerInitial()) {
     on<StartTimer>((event, emit) async {
       logger('TIMER STARTED');
-      _timer?.cancel();
-      _second = event.seconds;
-      emit(TimerStarted(second: _second));
-      _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-        if (_second > 0) {
-          _second--;
-          add(TickTimer(second: _second));
+      timer?.cancel();
+      second = event.seconds;
+      emit(TimerInitial());
+      emit(TimerStarted(second: second));
+      timer = Timer.periodic(const Duration(seconds: 1), (_) {
+        if (second > 0) {
+          second--;
+          add(TickTimer(second: second));
         } else {
           add(StopTimer());
         }
@@ -29,7 +30,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     });
 
     on<StopTimer>((event, emit) {
-      _timer?.cancel();
+      timer?.cancel();
       logger('TIMER STOPPED');
       emit(TimerStopped());
     });

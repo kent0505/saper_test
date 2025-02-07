@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../core/models/field.dart';
-import '../core/utils.dart';
 import '../widgets/diamonds_amount.dart';
 import '../widgets/field_card.dart';
 import '../widgets/increment_widget.dart';
@@ -23,9 +22,7 @@ class _GameScreenState extends State<GameScreen> {
   int amount = 10;
   int bombs = 3;
   bool started = false;
-  bool active = true;
   bool canTap = true;
-
   List<Field> fields = [];
 
   void goToWin(bool win) {
@@ -39,31 +36,25 @@ class _GameScreenState extends State<GameScreen> {
           );
         },
       ),
-    ).then((value) {
-      logger('THEN');
-      started = false;
-      active = true;
-      canTap = true;
-      diamondsWon = 0;
+    ).then((_) {
       generate();
-      setState(() {});
     });
   }
 
   void onField(Field value) async {
-    logger(value.isBomb);
-    diamondsWon += amount * coefficient;
-    active = true;
     value.active = true;
-    canTap = !value.isBomb;
-    setState(() {});
     if (value.isBomb) {
+      canTap = false;
+      setState(() {});
       await Future.delayed(
         const Duration(seconds: 1),
         () {
           goToWin(false);
         },
       );
+    } else {
+      diamondsWon += amount * coefficient;
+      setState(() {});
     }
   }
 
@@ -71,21 +62,19 @@ class _GameScreenState extends State<GameScreen> {
     if (started) {
       goToWin(true);
     } else {
-      setState(() {
-        started = true;
-        active = false;
-      });
+      started = true;
+      setState(() {});
     }
   }
 
   void onIncrementAmount() {
     amount++;
-    calculate();
+    setState(() {});
   }
 
   void onDecrementAmount() {
     amount--;
-    calculate();
+    setState(() {});
   }
 
   void onIncrementBombs() {
@@ -111,10 +100,13 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void generate() {
+    started = false;
+    canTap = true;
+    diamondsWon = 0;
     fields = List.generate(
         36,
         (index) => Field(
-              active: true,
+              active: false,
               isBomb: false,
             ));
     calculate();
@@ -226,7 +218,7 @@ class _GameScreenState extends State<GameScreen> {
             const SizedBox(height: 46),
             MainButton(
               title: started ? 'Finish Game' : 'Play Game',
-              active: active,
+              active: started ? fields.any((element) => element.active) : true,
               onPressed: onStart,
             ),
             const SizedBox(height: 44),

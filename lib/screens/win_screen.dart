@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../bloc/game/game_bloc.dart';
 import '../widgets/button.dart';
 import '../widgets/main_button.dart';
 import '../widgets/svg_widget.dart';
@@ -8,10 +10,12 @@ class WinScreen extends StatelessWidget {
   const WinScreen({
     super.key,
     required this.win,
+    this.wheel = false,
     required this.amount,
   });
 
   final bool win;
+  final bool wheel;
   final double amount;
 
   @override
@@ -30,9 +34,11 @@ class WinScreen extends StatelessWidget {
               children: [
                 const Spacer(),
                 Text(
-                  win
-                      ? 'Congratulations! You won $amount!'
-                      : 'Game Over! You lost $amount!',
+                  wheel
+                      ? 'You Won $amount!'
+                      : win
+                          ? 'Congratulations! You won $amount!'
+                          : 'Game Over! You lost $amount!',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white,
@@ -40,28 +46,33 @@ class WinScreen extends StatelessWidget {
                     fontFamily: 'w800',
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(height: 34),
                 SvgWidget(win ? 'assets/gift1.svg' : 'assets/gift2.svg'),
                 const Spacer(),
-                Button(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  },
-                  minSize: 30,
-                  child: const Text(
-                    'Go to Home',
-                    style: TextStyle(
-                      color: Color(0xffFBFF01),
-                      fontSize: 24,
-                      fontFamily: 'w800',
-                    ),
-                  ),
-                ),
+                wheel
+                    ? Container()
+                    : Button(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        minSize: 30,
+                        child: const Text(
+                          'Go to Home',
+                          style: TextStyle(
+                            color: Color(0xffFBFF01),
+                            fontSize: 24,
+                            fontFamily: 'w800',
+                          ),
+                        ),
+                      ),
                 const SizedBox(height: 26),
                 MainButton(
-                  title: 'Repeat Game',
+                  title: wheel ? 'Collect' : 'Repeat Game',
                   onPressed: () {
+                    context
+                        .read<GameBloc>()
+                        .add(AddDiamonds(amount: win ? amount : -amount));
                     Navigator.pop(context);
                   },
                 ),

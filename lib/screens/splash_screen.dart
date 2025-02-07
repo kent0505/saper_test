@@ -16,9 +16,7 @@ class SplashScreen extends StatelessWidget {
       body: BlocConsumer<GameBloc, GameState>(
         listener: (context, state) {
           if (state is GameLoaded) {
-            context
-                .read<TimerBloc>()
-                .add(StartTimer(seconds: getRemainingTime()));
+            context.read<TimerBloc>().add(StartTimer(seconds: getTime()));
 
             Future.delayed(
               const Duration(milliseconds: 300),

@@ -2,8 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:saper_test/core/prefs.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/utils.dart';
 
@@ -14,34 +12,29 @@ class WheelBloc extends Bloc<WheelEvent, WheelState> {
   WheelBloc() : super(WheelInitial()) {
     double turns = 0.0;
     List<double> angles = [
-      1.1, // red
-      1.2, // red
-      1.3, // yellow
-      1.4, // yellow
-      1.6, // purple
-      1.7, // purple
-      1.8, // blue
-      1.9, // blue
+      1.1, // 150
+      1.14, // 180
+      1.3, // 250
+      1.4, // 400
+      1.6, // 500
+      1.7, // 10
+      1.8, // 20
+      1.9, // 100
     ];
-    Color getColor(double x) {
-      if (x == 1.1 || x == 1.2) return Colors.redAccent;
-      if (x == 1.3 || x == 1.4) return Colors.yellowAccent;
-      if (x == 1.6 || x == 1.7) return Colors.deepPurpleAccent;
-      if (x == 1.8 || x == 1.9) return Colors.blueAccent;
-      return Colors.transparent;
+
+    double getPrize(double id) {
+      if (id == 1.1) return 150;
+      if (id == 1.14) return 180;
+      if (id == 1.3) return 250;
+      if (id == 1.4) return 400;
+      if (id == 1.6) return 500;
+      if (id == 1.7) return 10;
+      if (id == 1.8) return 20;
+      if (id == 1.9) return 100;
+      return 0;
     }
 
-    on<ResetSpin>((event, emit) {
-      turns = 0;
-      emit(WheelStopped(turns: turns));
-      emit(WheelInitial());
-    });
-
-    on<StartSpin>((event, emit) async {
-      final prefs = await SharedPreferences.getInstance();
-      lastSpin = getTimestamp();
-      prefs.setInt('lastSpin', lastSpin);
-
+    on<StartWheel>((event, emit) async {
       Random random = Random();
       int randomIndex = random.nextInt(angles.length);
       double angle = angles[randomIndex];
@@ -51,7 +44,7 @@ class WheelBloc extends Bloc<WheelEvent, WheelState> {
       await Future.delayed(const Duration(seconds: 10), () {
         logger('WHEEL STOPPED');
         emit(WheelStopped(
-          color: getColor(angle),
+          prize: getPrize(angle),
           turns: turns + angles[randomIndex],
           canSpin: true,
         ));

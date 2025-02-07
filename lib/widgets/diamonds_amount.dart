@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/game/game_bloc.dart';
-import '../core/prefs.dart';
+import '../core/utils.dart';
 import 'svg_widget.dart';
 
 class DiamondsAmount extends StatelessWidget {
