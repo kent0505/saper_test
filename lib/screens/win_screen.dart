@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/game/game_bloc.dart';
+import '../bloc/stats/stats_bloc.dart';
 import '../widgets/button.dart';
 import '../widgets/main_button.dart';
 import '../widgets/svg_widget.dart';
@@ -20,6 +20,8 @@ class WinScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final prize = amount.toStringAsFixed(2);
+
     return Scaffold(
       body: Stack(
         children: [
@@ -35,10 +37,10 @@ class WinScreen extends StatelessWidget {
                 const Spacer(),
                 Text(
                   wheel
-                      ? 'You Won $amount!'
+                      ? 'You Won $prize!'
                       : win
-                          ? 'Congratulations! You won $amount!'
-                          : 'Game Over! You lost $amount!',
+                          ? 'Congratulations! You won $prize!'
+                          : 'Game Over! You lost $prize!',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white,
@@ -71,7 +73,7 @@ class WinScreen extends StatelessWidget {
                   title: wheel ? 'Collect' : 'Repeat Game',
                   onPressed: () {
                     context
-                        .read<GameBloc>()
+                        .read<StatsBloc>()
                         .add(AddDiamonds(amount: win ? amount : -amount));
                     Navigator.pop(context);
                   },

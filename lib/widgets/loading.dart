@@ -9,26 +9,28 @@ class Loading extends StatefulWidget {
 }
 
 class _LoadingState extends State<Loading> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<int> _animation;
+  late AnimationController controller;
+  late Animation<int> animation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
     )..repeat();
-    _animation = TweenSequence<int>([
-      TweenSequenceItem(tween: ConstantTween(0), weight: 1),
-      TweenSequenceItem(tween: ConstantTween(1), weight: 1),
-      TweenSequenceItem(tween: ConstantTween(2), weight: 1),
-    ]).animate(_controller);
+    animation = TweenSequence<int>(
+      [
+        TweenSequenceItem(tween: ConstantTween(0), weight: 1),
+        TweenSequenceItem(tween: ConstantTween(1), weight: 1),
+        TweenSequenceItem(tween: ConstantTween(2), weight: 1),
+      ],
+    ).animate(controller);
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -36,18 +38,16 @@ class _LoadingState extends State<Loading> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Center(
       child: AnimatedBuilder(
-        animation: _animation,
+        animation: animation,
         builder: (context, child) {
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
               3,
-              (index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: _Indicator(index == _animation.value),
-                );
-              },
+              (index) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: _Circle(index == animation.value),
+              ),
             ),
           );
         },
@@ -56,8 +56,8 @@ class _LoadingState extends State<Loading> with SingleTickerProviderStateMixin {
   }
 }
 
-class _Indicator extends StatelessWidget {
-  const _Indicator(this.active);
+class _Circle extends StatelessWidget {
+  const _Circle(this.active);
 
   final bool active;
 

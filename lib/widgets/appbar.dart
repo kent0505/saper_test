@@ -16,9 +16,7 @@ class Appbar extends StatelessWidget {
           const SizedBox(width: 16),
           SvgButton(
             asset: 'assets/back.svg',
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            onPressed: Navigator.of(context).pop,
           ),
           Expanded(
             child: Center(

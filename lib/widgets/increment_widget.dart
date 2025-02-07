@@ -36,7 +36,7 @@ class IncrementWidget extends StatelessWidget {
               Expanded(
                 child: Center(
                   child: Text(
-                    '$amount.00',
+                    amount.toStringAsFixed(2),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,

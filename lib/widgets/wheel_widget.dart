@@ -16,8 +16,7 @@ class WheelWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedOpacity(
-      duration: const Duration(milliseconds: 300),
+    return Opacity(
       opacity: active ? 1 : 0.2,
       child: SizedBox(
         height: 390,

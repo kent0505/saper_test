@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/game/game_bloc.dart';
+import '../bloc/stats/stats_bloc.dart';
 import '../core/utils.dart';
 import 'svg_widget.dart';
 
@@ -25,10 +25,10 @@ class DiamondsAmount extends StatelessWidget {
           const SizedBox(width: 16),
           const SvgWidget('assets/diamond.svg'),
           const SizedBox(width: 8),
-          BlocBuilder<GameBloc, GameState>(
+          BlocBuilder<StatsBloc, StatsState>(
             builder: (context, state) {
               return Text(
-                diamonds.toString(),
+                diamonds.toStringAsFixed(2),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 20,

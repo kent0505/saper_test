@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'bloc/crud/crud_bloc.dart';
-import 'bloc/game/game_bloc.dart';
+import 'bloc/stats/stats_bloc.dart';
 import 'bloc/timer/timer_bloc.dart';
 import 'bloc/wheel/wheel_bloc.dart';
 import 'screens/splash_screen.dart';
@@ -24,8 +23,7 @@ class MyApp extends StatelessWidget {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => GameBloc()..add(LoadGameData())),
-        BlocProvider(create: (context) => CrudBloc()..add(GetModels())),
+        BlocProvider(create: (context) => StatsBloc()..add(GetStats())),
         BlocProvider(create: (context) => TimerBloc()),
         BlocProvider(create: (context) => WheelBloc()),
       ],

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../bloc/stats/stats_bloc.dart';
 import '../core/models/field.dart';
+import '../core/models/stats.dart';
+import '../core/utils.dart';
 import '../widgets/diamonds_amount.dart';
 import '../widgets/field_card.dart';
 import '../widgets/increment_widget.dart';
+import '../widgets/loading.dart';
 import '../widgets/main_button.dart';
 import '../widgets/svg_button.dart';
 import '../widgets/svg_widget.dart';
@@ -21,69 +26,61 @@ class _GameScreenState extends State<GameScreen> {
   double coefficient = 0.25;
   int amount = 10;
   int bombs = 3;
+  bool loading = true;
   bool started = false;
   bool canTap = true;
   List<Field> fields = [];
 
-  void goToWin(bool win) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return WinScreen(
-            win: win,
-            amount: diamondsWon,
-          );
-        },
-      ),
-    ).then((_) {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 2), () {
+      loading = false;
       generate();
     });
   }
 
-  void onField(Field value) async {
+  void goToWin(bool win) {
+    context.read<StatsBloc>().add(
+          AddStats(
+            model: Stats(
+              id: getTimestamp(),
+              amount: win ? diamondsWon : -diamondsWon,
+              predicted: amount.toDouble(),
+              coefficient: coefficient,
+            ),
+          ),
+        );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => WinScreen(win: win, amount: diamondsWon),
+      ),
+    ).then((_) => generate());
+  }
+
+  void onField(Field value) {
+    if (!canTap) return;
     value.active = true;
     if (value.isBomb) {
       canTap = false;
-      setState(() {});
-      await Future.delayed(
-        const Duration(seconds: 1),
-        () {
-          goToWin(false);
-        },
-      );
+      Future.delayed(const Duration(seconds: 1), () => goToWin(false));
     } else {
       diamondsWon += amount * coefficient;
-      setState(() {});
     }
+    setState(() {});
   }
 
   void onStart() {
-    if (started) {
-      goToWin(true);
-    } else {
-      started = true;
-      setState(() {});
-    }
+    started ? goToWin(true) : setState(() => started = true);
   }
 
-  void onIncrementAmount() {
-    amount++;
-    setState(() {});
+  void updateAmount(bool increment) {
+    setState(() => amount += increment ? 1 : -1);
   }
 
-  void onDecrementAmount() {
-    amount--;
-    setState(() {});
-  }
-
-  void onIncrementBombs() {
-    bombs++;
-    calculate();
-  }
-
-  void onDecrementBombs() {
-    bombs--;
+  void updateBombs(bool increment) {
+    bombs += increment ? 1 : -1;
     calculate();
   }
 
@@ -92,9 +89,7 @@ class _GameScreenState extends State<GameScreen> {
     for (Field field in fields) {
       field.isBomb = false;
     }
-    for (int i = 0; i < bombs; i++) {
-      fields[i].isBomb = true;
-    }
+    fields.take(bombs).forEach((field) => field.isBomb = true);
     fields.shuffle();
     setState(() {});
   }
@@ -103,19 +98,8 @@ class _GameScreenState extends State<GameScreen> {
     started = false;
     canTap = true;
     diamondsWon = 0;
-    fields = List.generate(
-        36,
-        (index) => Field(
-              active: false,
-              isBomb: false,
-            ));
+    fields = List.generate(36, (_) => Field());
     calculate();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    generate();
   }
 
   @override
@@ -130,98 +114,92 @@ class _GameScreenState extends State<GameScreen> {
               children: [
                 SvgButton(
                   asset: 'assets/back.svg',
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+                  onPressed: Navigator.of(context).pop,
                 ),
                 const Spacer(),
                 const DiamondsAmount(),
               ],
             ),
-            const SizedBox(height: 18),
-            started
-                ? Container(
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: const Color(0xff390639),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SvgWidget(
-                          'assets/diamond.svg',
-                          height: 32,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          diamondsWon.toString(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 40,
-                            fontFamily: 'w800',
+            if (loading)
+              const Expanded(child: Loading())
+            else ...[
+              const SizedBox(height: 18),
+              started
+                  ? Container(
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: const Color(0xff390639),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SvgWidget('assets/diamond.svg', height: 32),
+                          const SizedBox(width: 8),
+                          Text(
+                            diamondsWon.toStringAsFixed(2),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 40,
+                              fontFamily: 'w800',
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
+                    )
+                  : const Text(
+                      'Let’s Play Game!',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 40,
+                        fontFamily: 'w800',
+                      ),
                     ),
-                  )
-                : const Text(
-                    'Let’s Play Game!',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 40,
-                      fontFamily: 'w800',
-                    ),
-                  ),
-            const SizedBox(height: 26),
-            Expanded(
-              child: Center(
-                child: SizedBox(
-                  width: 60 * 6,
-                  child: Wrap(
-                    children: List.generate(
-                      fields.length,
-                      (index) {
+              const SizedBox(height: 26),
+              Expanded(
+                child: Center(
+                  child: SizedBox(
+                    width: 60 * 6,
+                    child: Wrap(
+                      children: fields.map((field) {
                         return FieldCard(
-                          field: fields[index],
-                          onPressed:
-                              canTap && started && fields[index].active == false
-                                  ? onField
-                                  : null,
+                          field: field,
+                          onPressed: canTap && started && !field.active
+                              ? onField
+                              : null,
                         );
-                      },
+                      }).toList(),
                     ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Avoid mines while opening all objectives to multiply your winnings by $amount!',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontFamily: 'w600',
+              const SizedBox(height: 16),
+              Text(
+                'Avoid mines while opening all objectives to multiply your winnings by $amount!',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontFamily: 'w600',
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            started
-                ? Container()
-                : IncrementWidget(
-                    amount: amount,
-                    bombs: bombs,
-                    onIncrement1: onIncrementAmount,
-                    onDecrement1: onDecrementAmount,
-                    onIncrement2: onIncrementBombs,
-                    onDecrement2: onDecrementBombs,
-                  ),
-            const SizedBox(height: 46),
-            MainButton(
-              title: started ? 'Finish Game' : 'Play Game',
-              active: started ? fields.any((element) => element.active) : true,
-              onPressed: onStart,
-            ),
-            const SizedBox(height: 44),
+              const SizedBox(height: 16),
+              if (!started)
+                IncrementWidget(
+                  amount: amount,
+                  bombs: bombs,
+                  onIncrement1: () => updateAmount(true),
+                  onDecrement1: () => updateAmount(false),
+                  onIncrement2: () => updateBombs(true),
+                  onDecrement2: () => updateBombs(false),
+                ),
+              const SizedBox(height: 46),
+              MainButton(
+                title: started ? 'Finish Game' : 'Play Game',
+                active: started ? fields.any((field) => field.active) : true,
+                onPressed: onStart,
+              ),
+              const SizedBox(height: 44),
+            ],
           ],
         ),
       ),

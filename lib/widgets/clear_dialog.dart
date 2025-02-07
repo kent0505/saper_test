@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../bloc/stats/stats_bloc.dart';
+import '../bloc/timer/timer_bloc.dart';
 import 'button.dart';
 
 class ClearDialog extends StatelessWidget {
@@ -47,7 +50,9 @@ class ClearDialog extends StatelessWidget {
                   fontWeight: 'w700',
                   color: const Color(0xffFF3B30),
                   onPressed: () {
-                    // clear data event
+                    context.read<StatsBloc>().add(ClearStats());
+                    context.read<TimerBloc>().add(StopTimer());
+                    Navigator.pop(context);
                     Navigator.pop(context);
                   },
                 ),

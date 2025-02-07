@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../bloc/stats/stats_bloc.dart';
 import '../core/models/stats.dart';
+import '../core/utils.dart';
+import '../widgets/no_data.dart';
 import '../widgets/svg_button.dart';
 import '../widgets/svg_widget.dart';
 
@@ -23,10 +27,10 @@ class StatsScreen extends StatelessWidget {
                 },
               ),
               const Spacer(),
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
+                  const Text(
                     'Total Winnings',
                     style: TextStyle(
                       color: Color(0xff826882),
@@ -34,18 +38,25 @@ class StatsScreen extends StatelessWidget {
                       fontFamily: 'w800',
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Row(
                     children: [
-                      SvgWidget('assets/diamond.svg'),
-                      SizedBox(width: 4),
-                      Text(
-                        '112,550,40',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontFamily: 'w800',
-                        ),
+                      const SvgWidget('assets/diamond.svg'),
+                      const SizedBox(width: 4),
+                      BlocBuilder<StatsBloc, StatsState>(
+                        builder: (context, state) {
+                          return Text(
+                            state is StatsLoaded
+                                ? getTotalDiamondsStats(state.stats)
+                                    .toStringAsFixed(2)
+                                : 0.toStringAsFixed(2),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontFamily: 'w800',
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -56,11 +67,22 @@ class StatsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                _StatsCard(stats: Stats()),
-              ],
+            child: BlocBuilder<StatsBloc, StatsState>(
+              builder: (context, state) {
+                if (state is StatsLoaded) {
+                  if (state.stats.isEmpty) return const NoData();
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: state.stats.length,
+                    itemBuilder: (context, index) {
+                      return _StatsCard(stats: state.stats[index]);
+                    },
+                  );
+                }
+
+                return Container();
+              },
             ),
           ),
         ],
@@ -79,6 +101,7 @@ class _StatsCard extends StatelessWidget {
     return Container(
       height: 140,
       padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         color: const Color(0xff4D0A4F),
         borderRadius: BorderRadius.circular(20),
@@ -87,22 +110,24 @@ class _StatsCard extends StatelessWidget {
           bottom: BorderSide(width: 4, color: Color(0xff390639)),
         ),
       ),
-      child: const Column(
+      child: Column(
         children: [
           _Data(
-            title: '22.02.2025',
-            data: '+305.86',
-            color: Color(0xffFBFF01),
+            title: timestampToString(stats.id),
+            data: stats.amount > 0
+                ? '+${stats.amount.toStringAsFixed(2)}'
+                : stats.amount.toStringAsFixed(2),
+            color: const Color(0xffFBFF01),
           ),
-          Spacer(),
+          const Spacer(),
           _Data(
             title: 'Predicted sum',
-            data: '20.00',
+            data: stats.predicted.toStringAsFixed(2),
           ),
-          Spacer(),
+          const Spacer(),
           _Data(
             title: 'Coefficient',
-            data: '0.25',
+            data: stats.coefficient.toStringAsFixed(2),
           ),
         ],
       ),

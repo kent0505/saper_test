@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../widgets/appbar.dart';
 import '../widgets/button.dart';
-import '../widgets/dialog_widget.dart';
+import '../widgets/clear_dialog.dart';
 import '../widgets/svg_widget.dart';
 import 'privacy_screen.dart';
 import 'terms_screen.dart';

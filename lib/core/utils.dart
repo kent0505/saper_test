@@ -1,16 +1,32 @@
-import 'dart:developer' as developer;
-
 import 'package:intl/intl.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'models/stats.dart';
 
 double diamonds = 0;
 int lastSpin = 0;
 
-Future<void> getPrefs() async {
+Future<void> getData() async {
   final prefs = await SharedPreferences.getInstance();
   // await prefs.clear();
   diamonds = prefs.getDouble('diamonds') ?? 0;
   lastSpin = prefs.getInt('lastSpin') ?? 0;
+  await Hive.initFlutter();
+  // await Hive.deleteBoxFromDisk('saper_test_box');
+  Hive.registerAdapter(StatsAdapter());
+}
+
+Future<List<Stats>> getStats() async {
+  final box = await Hive.openBox('saper_test_box');
+  List data = box.get('stats') ?? [];
+  return data.cast<Stats>();
+}
+
+Future<List<Stats>> updateStats(List<Stats> stats) async {
+  final box = await Hive.openBox('saper_test_box');
+  box.put('stats', stats);
+  return await box.get('stats');
 }
 
 int getTimestamp() => DateTime.now().millisecondsSinceEpoch ~/ 1000;
@@ -20,32 +36,9 @@ String timestampToString(int timestamp) {
   return DateFormat('dd.MM.yyyy').format(date);
 }
 
-String dateToString(DateTime date) {
-  return DateFormat('dd.MM.yyyy').format(date);
-}
-
-String timeToString(DateTime time) {
-  return DateFormat('HH:mm').format(time);
-}
-
-DateTime stringToDate(String date) {
-  try {
-    return DateFormat('dd.MM.yyyy').parse(date);
-  } catch (e) {
-    logger(e);
-    return DateTime.now();
-  }
-}
-
-String formatNumber(int number) {
-  return NumberFormat('#,###').format(number);
-}
-
-void logger(Object message) => developer.log(message.toString());
-
 int getTime() {
-  int cooldown = 24 * 60 * 60;
-  // int cooldown = 30;
+  int cooldown = 24 * 60 * 60; // 24 hours
+  // int cooldown = 30; // 30 seconds for test
   int nextSpinTime = lastSpin + cooldown;
   int remainingTime = nextSpinTime - getTimestamp();
   return remainingTime > 0 ? remainingTime : 0;
@@ -58,4 +51,8 @@ String formatTime(int seconds) {
   return '${hours.toString().padLeft(2, '0')}:'
       '${minutes.toString().padLeft(2, '0')}:'
       '${secs.toString().padLeft(2, '0')}';
+}
+
+double getTotalDiamondsStats(List<Stats> stats) {
+  return stats.fold(0, (total, i) => total + i.amount);
 }

@@ -1,7 +1,7 @@
 class Field {
   Field({
-    required this.active,
-    required this.isBomb,
+    this.active = false,
+    this.isBomb = false,
   });
 
   bool active;
